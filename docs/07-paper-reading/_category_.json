@@ -1,0 +1,8 @@
+{
+  "label": "📖 论文精读",
+  "position": 8,
+  "link": {
+    "type": "generated-index",
+    "description": "读过的关键论文的笔记与思考。"
+  }
+}

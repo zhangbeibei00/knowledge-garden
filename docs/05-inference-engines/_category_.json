@@ -1,0 +1,8 @@
+{
+  "label": "🚀 推理引擎",
+  "position": 6,
+  "link": {
+    "type": "generated-index",
+    "description": "vLLM / SGLang / TensorRT-LLM 等推理引擎的核心技术与源码笔记。"
+  }
+}

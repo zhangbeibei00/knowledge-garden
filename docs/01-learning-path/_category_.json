@@ -1,0 +1,8 @@
+{
+  "label": "🧭 学习路径",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "系统化的学习路径与知识地图，帮你快速了解 AI Infra 中量化 / RL 后训练 / 推理引擎三个方向的关联。"
+  }
+}

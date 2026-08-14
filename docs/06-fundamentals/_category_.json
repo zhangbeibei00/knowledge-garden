@@ -1,0 +1,8 @@
+{
+  "label": "🧠 基础知识",
+  "position": 7,
+  "link": {
+    "type": "generated-index",
+    "description": "Transformer / GPU-CUDA / 分布式训练等 AI Infra 工程师需要的地基知识。"
+  }
+}

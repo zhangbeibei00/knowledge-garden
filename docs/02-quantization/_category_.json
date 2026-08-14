@@ -1,0 +1,8 @@
+{
+  "label": "📐 模型量化",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "从量化基础到 PTQ/QAT 主流方法，再到 FP8/NVFP4 等低精度格式的原理与实践。"
+  }
+}
