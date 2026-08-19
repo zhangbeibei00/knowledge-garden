@@ -17,9 +17,10 @@ title: 实践笔记总览
 
 - 🌱 RL-QAT 训练稳定性问题的解决路径
 - 🌱 OPD (On-Policy Distillation) 单独精读
-- 🌱 FP8 vs NVFP4 数值格式对比
+- 🌱 FP8 vs NVFP4 实际部署对比（仅基础介绍已入库）
 - 🌱 llmcompressor 使用心得
 - 🌱 常见量化算法在 vLLM 上的支持情况
+- 🌱 量化掉点实战案例（已有方法论，待补具体 case）
 
 ---
 

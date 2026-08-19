@@ -11,24 +11,27 @@ title: 模型量化总览
 
 ### [📖 基础理论](/docs/quantization/basics)
 从零理解量化的数学基础与工程实现。
-- 对称 vs 非对称量化
-- Per-tensor / Per-channel / Per-group
-- 量化误差与校准
+- [量化本质与映射](/docs/quantization/basics/quantization-mapping) — scale/zero_point、线性 vs 非线性
+- [量化粒度](/docs/quantization/basics/granularity) — per-tensor / per-channel / per-group
+- [激活量化](/docs/quantization/basics/activation-quantization) — 动态 vs 静态
 
 ### [📊 PTQ 方法](/docs/quantization/ptq)
 训练后量化（Post-Training Quantization）主流方法。
-- GPTQ、AWQ、SmoothQuant、HQQ
-- 各方法的原理、优劣、适用场景
+- [校准算法](/docs/quantization/ptq/calibration-algorithms) — MinMax / Percentile / KL / MSE
+- [量化掉点排查](/docs/quantization/ptq/debug-quantization-loss) — 一份实战 debug 手册
+- 🌱 GPTQ / AWQ / SmoothQuant / HQQ 精读（待补充）
 
 ### [🎯 QAT 方法](/docs/quantization/qat)
 量化感知训练（Quantization-Aware Training）。
-- LSQ / LSQ+ / OmniQuant
-- QAT 训练技巧
+- [STE 直通估计器](/docs/quantization/qat/ste-fundamentals) — QAT 的核心机制
+- 🌱 LSQ / OmniQuant / LLM-QAT（待补充）
 
 ### [🔢 低精度格式](/docs/quantization/low-precision-formats)
 硬件与数值格式。
-- FP8 / MXFP8 / NVFP4 / MXFP4 / INT4
-- Tensor Core 支持链路
+- [FP16 与 BF16](/docs/quantization/low-precision-formats/fp16-bf16) — 训练主力的两条路线
+- [FP8（E4M3/E5M2）](/docs/quantization/low-precision-formats/fp8) — H100 时代主力
+- [NVFP4 / MXFP4](/docs/quantization/low-precision-formats/nvfp4-mxfp4) — Blackwell 4-bit
+- [INT8](/docs/quantization/low-precision-formats/int8) — 经典 PTQ 老将
 
 ### [⭐ 实践笔记](/docs/quantization/practice-notes)
 一手实践与深度对比。
@@ -49,4 +52,5 @@ title: 模型量化总览
 
 ---
 
-*🚧 大部分子模块还在填充中。已完成 = ⭐ 实践笔记。*
+*已完成模块：基础理论 · 低精度格式 · PTQ 校准 & debug · QAT STE · 实践笔记 QAD vs OPD。*
+*🚧 补充中：GPTQ/AWQ/SmoothQuant 精读、LSQ/OmniQuant、更多实践对比。*
