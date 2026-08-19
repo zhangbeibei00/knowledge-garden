@@ -346,4 +346,5 @@ graph TD
 - [01-ppo](/docs/rl-post-training/algorithms/01-ppo) — PPO 独立章节
 - [02-grpo](/docs/rl-post-training/algorithms/02-grpo) — GRPO 独立章节
 - [03-dpo](/docs/rl-post-training/algorithms/03-dpo) — DPO 独立章节
+- [05-opd](/docs/rl-post-training/algorithms/05-opd) — OPD 独立章节
 

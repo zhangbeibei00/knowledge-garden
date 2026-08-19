@@ -11,12 +11,13 @@ title: 🎯 RL 后训练
 
 ### 🧠 [算法](/docs/rl-post-training/algorithms)
 
-RL 对齐算法原理与实现细节。
+RL / 后训练算法原理与实现细节。
 
 - [PPO · 近端策略优化](/docs/rl-post-training/algorithms/01-ppo)
 - [GRPO · 组相对策略优化](/docs/rl-post-training/algorithms/02-grpo)
 - [DPO · 直接偏好优化](/docs/rl-post-training/algorithms/03-dpo)
 - [横向对比 · 演进 / 变体 / 选型](/docs/rl-post-training/algorithms/04-comparison)
+- [OPD · On-Policy Distillation](/docs/rl-post-training/algorithms/05-opd)
 
 ### 🔧 Pipeline
 

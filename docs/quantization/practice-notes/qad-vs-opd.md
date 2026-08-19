@@ -14,6 +14,10 @@ format: md
 
 > 精简对比 NVFP4 QAD（NVIDIA, 2026）与 On-Policy Distillation（Thinking Machines, 2025），并解释 forward/reverse KL 的核心差异。
 
+:::info 🔗 相关阅读
+想看 OPD 的完整制度精读（背景、公式、伪代码、实验数字、变体），进 → [OPD - On-Policy Distillation 精读](/docs/rl-post-training/algorithms/05-opd)
+:::
+
 ---
 
 ## 一、两个方法的定位

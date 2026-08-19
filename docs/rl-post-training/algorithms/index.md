@@ -3,21 +3,23 @@ sidebar_position: 0
 title: 📖 索引
 ---
 
-# RL 算法知识库：PPO / GRPO / DPO
+# RL 算法知识库：PPO / GRPO / DPO / OPD
 
-> 按算法拆分为 4 个独立章节（PPO / GRPO / DPO / 横向对比），方便按需查阅与检索。
+> 后训练主流算法拆分为 5 个独立章节（PPO / GRPO / DPO / 横向对比 / OPD），方便按需查阅与检索。
 
 ---
 
 ## 📖 一句话结论
 
-**PPO** 是"稳妥的探索型选手"（4 模型、在线 RL、探索强但成本高），**GRPO** 是"推理任务的性价比之王"（3 模型、组内归一化、省 Critic 显存），**DPO** 是"极简的离线优化器"（2 模型、无 RL 循环、稳定但探索弱）。
+**PPO** 是"稳妥的探索型选手"（4 模型、在线 RL、探索强但成本高），**GRPO** 是"推理任务的性价比之王"（3 模型、组内归一化、省 Critic 显存），**DPO** 是"极简的离线优化器"（2 模型、无 RL 循环、稳定但探索弱），**OPD** 是"小模型后训练的性价比选手"（学生自己 rollout + 教师逐 token 打分，成本仅 RL 的 1/10）。
 
-三者递进关系：
+小组关系：
 
 ```
 PPO  →  GRPO (去 Critic)  →  DPO (去 RL 循环)
      逐步降低工程复杂度，但也逐步牺牲探索能力
+
+OPD  = SFT (dense) + RL (on-policy)  — 另一个维度的方法
 ```
 
 ---
@@ -30,6 +32,7 @@ PPO  →  GRPO (去 Critic)  →  DPO (去 RL 循环)
 | **[02 · GRPO](/docs/rl-post-training/algorithms/02-grpo)** | 组相对策略优化（组内归一化、目标函数逐项拆解、显存节省） |
 | **[03 · DPO](/docs/rl-post-training/algorithms/03-dpo)** | 直接偏好优化（RLHF→DPO 完整推导、Bradley-Terry、隐式奖励） |
 | **[04 · 横向对比](/docs/rl-post-training/algorithms/04-comparison)** | 三者对比 + 演进关系 + 最新变体 + 选型指南 + 公式速查 |
+| **[05 · OPD](/docs/rl-post-training/algorithms/05-opd)** | On-Policy Distillation（学生 rollout + 教师逐 token 打分、reverse KL、成本 1/10 RL） |
 
 ---
 
@@ -59,5 +62,6 @@ PPO  →  GRPO (去 Critic)  →  DPO (去 RL 循环)
 - **复杂通用任务，需强探索能力** → PPO（探索最强但成本最高）
 - **MoE 模型训练** → GSPO（序列级优化适配专家路由）
 - **显存受限** → DPO > SimPO > GRPO > PPO
+- **有强 teacher、小学生、想省钱** → **OPD**（成本仅 RL 的 1/10，需要 teacher）
 
 完整决策树见 [04 · 横向对比 § 选型指南](/docs/rl-post-training/algorithms/04-comparison#6-选型指南)。
