@@ -1,97 +1,72 @@
-# 部署到 GitHub + Vercel
+# 部署说明
 
-## 一、推送到 GitHub
+本仓库使用 **GitHub Pages** 自动部署，源码在 `main` 分支，构建产物发布到 `gh-pages` 分支。
 
-### 1. 创建 GitHub 仓库
-在 GitHub 上新建一个仓库（例如 `knowledge-garden`），**不要**勾选 Add README / .gitignore / license（我们本地已经有了）。
+## 自动部署（当前方案）
 
-### 2. 修改配置里的用户名
-把 `docusaurus.config.ts` 里所有 `your-username` 替换成你的 GitHub 用户名：
+每次 push 到 `main` 分支，GitHub Actions 会自动触发 `.github/workflows/deploy.yml`：
 
-```bash
-cd knowledge-garden
-sed -i 's/your-username/你的GitHub用户名/g' docusaurus.config.ts
-```
+1. Checkout 代码
+2. `npm ci` 装依赖
+3. `npm run build` 构建静态站点（产物在 `build/`）
+4. 通过 `actions/deploy-pages` 发布到 GitHub Pages
 
-如果要用 GitHub Pages，还需要改：
-- `url`：改成 `https://你的用户名.github.io`
-- `baseUrl`：仓库名前后加斜杠，如 `/knowledge-garden/`
+访问地址：<https://zhangbeibei00.github.io/knowledge-garden/>
 
-如果只用 Vercel（不走 GitHub Pages）：
-- `url`：改成你 Vercel 部署的地址，如 `https://knowledge-garden.vercel.app`
-- `baseUrl`：改成 `/`
+## 首次启用 GitHub Pages
 
-### 3. 提交并推送
-```bash
-cd knowledge-garden
-git init -b main
-git add .
-git commit -m "chore: initial commit of knowledge garden"
-git remote add origin git@github.com:你的用户名/knowledge-garden.git
-git push -u origin main
-```
+在 GitHub 仓库首次推送后，需要手动做一次：
 
-## 二、部署到 Vercel（最简单）
+1. 进入仓库 → **Settings → Pages**
+2. Source 选 **GitHub Actions**（不是 branch）
+3. 保存。之后 Actions 触发时会自动发布
 
-1. 打开 https://vercel.com/ ，用 GitHub 账号登录
-2. 点 **Add New → Project**
-3. Import 你刚推的仓库
-4. Framework Preset 会自动识别为 **Docusaurus**
-5. 点 **Deploy**
-6. 一分钟后拿到 `https://knowledge-garden-xxx.vercel.app`
-
-**后续每次 push 到 main 分支，Vercel 会自动重新部署**。
-
-## 三、（可选）绑定自定义域名
-
-1. 在 Vercel 项目 → Settings → Domains
-2. 添加你的域名（比如 `garden.你的域名.com`）
-3. 按提示在域名服务商处加 CNAME 记录，指向 `cname.vercel-dns.com`
-
-## 四、部署到 GitHub Pages（备用方案）
+## 本地开发 / 手动构建
 
 ```bash
-# 确保 docusaurus.config.ts 里 organizationName / projectName / url / baseUrl 都正确
-GIT_USER=你的GitHub用户名 npm run deploy
+npm install        # 装依赖
+npm start          # 本地开发（热更新，http://localhost:3000/knowledge-garden/）
+npm run build      # 构建静态站点
+npm run serve      # 本地预览构建产物
 ```
 
-访问 `https://你的用户名.github.io/knowledge-garden/`
+## 常见坑位
 
-## 五、常见坑位
+### baseUrl
+GitHub Pages 项目页部署到 `<user>.github.io/<repo>/`，所以 `docusaurus.config.ts` 里：
+- `url: 'https://zhangbeibei00.github.io'`
+- `baseUrl: '/knowledge-garden/'`
 
-### baseUrl 配置错误
-如果部署后页面样式/图片全丢，通常是 `baseUrl` 写错了：
-- Vercel（根域名部署）：`baseUrl: '/'`
-- GitHub Pages（项目子路径）：`baseUrl: '/仓库名/'`
+如果之后绑定自定义域名或换到根域名部署，需要把 `baseUrl` 改回 `/`。
 
 ### 中文分类 URL 编码
-Docusaurus build 时会 warn 中文 slug 被 URL 编码。功能正常但看起来长。想要英文 URL 就在 `_category_.json` 里加 `link.slug: 'quantization'` 之类的英文别名。
+Docusaurus build 时会 warn 中文 slug 被 URL 编码。想要英文 URL 就在 `_category_.json` 里加 `link.slug: 'quantization'` 之类的英文别名。
 
 ### MDX 数学公式报错
-含数学公式的 md 文件在 frontmatter 里加：
-```yaml
-format: md
-```
-这样 Docusaurus 会用 CommonMark 而不是 MDX 解析，避免花括号冲突。
+含数学公式的 md 文件在 frontmatter 加 `format: md`，改用 CommonMark 解析避开 MDX 花括号冲突。
 
-## 六、启用站内搜索（可选）
+## 备用：Vercel 部署
 
-Docusaurus 默认不带搜索。有两个方案：
+如果要换 Vercel（会自动识别 Docusaurus，零配置）：
 
-### 免费方案：Local Search
-```bash
-npm install --save @easyops-cn/docusaurus-search-local
-```
+1. 登录 <https://vercel.com/>，Import 本仓库
+2. Framework Preset 会自动识别为 Docusaurus
+3. **同时** 把 `docusaurus.config.ts` 的 `baseUrl` 改成 `/`、`url` 改成 Vercel 域名
+4. 点 Deploy
 
-在 `docusaurus.config.ts` 的 `themes` 数组加：
-```ts
-themes: [
+## 启用站内搜索（可选）
+
+Docusaurus 默认不带搜索。可选：
+
+- **Local Search**（免费、无需申请）：
+  ```bash
+  npm install --save @easyops-cn/docusaurus-search-local
+  ```
+  然后在 `docusaurus.config.ts` 的 `themes` 数组加：
+  ```ts
   [
     require.resolve('@easyops-cn/docusaurus-search-local'),
     {hashed: true, language: ['en', 'zh']},
   ],
-],
-```
-
-### 强大方案：Algolia DocSearch（免费，需申请）
-访问 https://docsearch.algolia.com/apply 申请，通过后按官方文档配置。
+  ```
+- **Algolia DocSearch**（免费，需申请）：<https://docsearch.algolia.com/apply>

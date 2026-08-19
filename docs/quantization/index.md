@@ -9,31 +9,30 @@ title: 模型量化总览
 
 ## 内容地图
 
-### [📖 基础理论](./basics)
+### [📖 基础理论](/docs/quantization/basics)
 从零理解量化的数学基础与工程实现。
 - 对称 vs 非对称量化
 - Per-tensor / Per-channel / Per-group
 - 量化误差与校准
 
-### [📊 PTQ 方法](./ptq)
+### [📊 PTQ 方法](/docs/quantization/ptq)
 训练后量化（Post-Training Quantization）主流方法。
 - GPTQ、AWQ、SmoothQuant、HQQ
 - 各方法的原理、优劣、适用场景
 
-### [🎯 QAT 方法](./qat)
+### [🎯 QAT 方法](/docs/quantization/qat)
 量化感知训练（Quantization-Aware Training）。
 - LSQ / LSQ+ / OmniQuant
 - QAT 训练技巧
 
-### [🔢 低精度格式](./low-precision-formats)
+### [🔢 低精度格式](/docs/quantization/low-precision-formats)
 硬件与数值格式。
 - FP8 / MXFP8 / NVFP4 / MXFP4 / INT4
 - Tensor Core 支持链路
 
-### [⭐ 实践笔记](./practice-notes)
+### [⭐ 实践笔记](/docs/quantization/practice-notes)
 一手实践与深度对比。
-- [QAD - NVFP4 量化感知蒸馏](./practice-notes/qad-nvfp4)
-- [QAD vs OPD 对比](./practice-notes/qad-vs-opd)
+- [QAD vs OPD 对比](/docs/quantization/practice-notes/qad-vs-opd)
 
 ## 学习建议
 

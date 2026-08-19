@@ -1,4 +1,4 @@
-# 🌱 开发虾的知识花园（Knowledge Garden）
+# 🌱 知识花园（Knowledge Garden）
 
 > 一个 AI Infra 工程师的第二大脑 · 聚焦 **模型量化 × RL 后训练 × 推理引擎**
 
@@ -43,25 +43,8 @@ npm run serve
 
 ## 🌐 部署
 
-### 方式一：Vercel（推荐，全自动）
-
-1. 把仓库 push 到 GitHub
-2. 登录 https://vercel.com/ 用 GitHub 账号
-3. Import 你的 GitHub 仓库
-4. Framework 选 **Docusaurus**，其他默认
-5. 点 Deploy，一分钟后拿到 `xxx.vercel.app` 域名
-
-**部署前先改配置**：编辑 `docusaurus.config.ts`，把 `your-username` 全部替换成你的 GitHub 用户名，`url` / `baseUrl` 改成实际部署地址。
-
-### 方式二：GitHub Pages
-
-```bash
-# 1) 修改 docusaurus.config.ts 里的 organizationName / projectName / url / baseUrl
-# 2) 执行部署
-GIT_USER=<你的 GitHub 用户名> npm run deploy
-```
-
-详见 [Docusaurus 部署文档](https://docusaurus.io/docs/deployment)。
+仓库已配套 GitHub Actions自动部署：每次 push 到 `main` 分支，会自动构建并发布到 GitHub Pages。
+详见 [DEPLOYMENT.md](./DEPLOYMENT.md)。
 
 ## ✍️ 写作规范
 

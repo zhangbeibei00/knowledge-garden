@@ -26,7 +26,7 @@ function HomepageHeader() {
           <Link
             className="button button--outline button--lg"
             style={{marginLeft: '1rem'}}
-            to="/docs/01-learning-path/overview">
+            to="/docs/learning-path/overview">
             🧭 学习路径
           </Link>
         </div>
@@ -40,7 +40,7 @@ export default function Home(): ReactNode {
   return (
     <Layout
       title={siteConfig.title}
-      description="一个 AI Infra 工程师的第二大脑 · 量化 · RL · 推理">
+      description="hello">
       <HomepageHeader />
       <main>
         <HomepageFeatures />

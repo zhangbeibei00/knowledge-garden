@@ -74,10 +74,10 @@ title: 学习路径总览
 
 如果你和我背景类似（工程为主，需要补理论）：
 
-1. 先看[基础知识](/docs/category/基础知识)里对应的地基章节
-2. 然后进[模型量化](/docs/category/模型量化)或[RL 后训练](/docs/category/rl-后训练)（你更感兴趣的那个）
-3. 每读完一个主题，去[推理引擎](/docs/category/推理引擎)里对照工程实现
-4. 高质量论文进[论文精读](/docs/category/论文精读)
+1. 先看[基础知识](/docs/fundamentals)里对应的地基章节
+2. 然后进[模型量化](/docs/quantization)或[RL 后训练](/docs/rl-post-training)（你更感兴趣的那个）
+3. 每读完一个主题，去[推理引擎](/docs/inference-engines)里对照工程实现
+4. 高质量论文进[论文精读](/docs/paper-reading)
 
 ---
 

@@ -11,8 +11,7 @@ title: 实践笔记总览
 
 | 笔记 | 状态 | 简介 |
 |---|---|---|
-| [QAD - NVFP4 量化感知蒸馏](./qad-nvfp4) | 🌳 Evergreen | NVIDIA 2026 论文完整翻译精读 |
-| [QAD vs OPD - 两种蒸馏对比](./qad-vs-opd) | 🌳 Evergreen | 量化蒸馏 vs 能力蒸馏的本质区别 |
+| [QAD vs OPD - 两种蒸馏对比](/docs/quantization/practice-notes/qad-vs-opd) | 🌳 Evergreen | 量化蒸馏 vs 能力蒸馏的本质区别 |
 
 ## 待补充话题
 

@@ -5,20 +5,28 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 
 const config: Config = {
-  title: '开发虾的知识花园',
-  tagline: '一个 AI Infra 工程师的第二大脑 · 量化 × RL × 推理',
+  title: '知识花园',
+  tagline: '量化 × RL × 推理',
   favicon: 'img/favicon.ico',
 
   future: {
     v4: true,
   },
 
-  // ⚠️ 部署到 GitHub Pages 或 Vercel 前，请把下面 url / organizationName / projectName 改成你自己的
-  url: 'https://your-username.github.io',
+  markdown: {
+    mermaid: true,
+  },
+
+  themes: ['@docusaurus/theme-mermaid'],
+
+  // 部署目标：https://zhangbeibei00.github.io/knowledge-garden/
+  url: 'https://zhangbeibei00.github.io',
   baseUrl: '/knowledge-garden/',
 
-  organizationName: 'your-username',
+  organizationName: 'zhangbeibei00',
   projectName: 'knowledge-garden',
+  deploymentBranch: 'gh-pages',
+  trailingSlash: false,
 
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
@@ -35,7 +43,7 @@ const config: Config = {
         docs: {
           sidebarPath: './sidebars.ts',
           routeBasePath: 'docs',
-          editUrl: 'https://github.com/your-username/knowledge-garden/tree/main/',
+          editUrl: 'https://github.com/zhangbeibei00/knowledge-garden/tree/main/',
           remarkPlugins: [remarkMath],
           rehypePlugins: [rehypeKatex],
         },
@@ -45,7 +53,7 @@ const config: Config = {
             type: ['rss', 'atom'],
             xslt: true,
           },
-          editUrl: 'https://github.com/your-username/knowledge-garden/tree/main/',
+          editUrl: 'https://github.com/zhangbeibei00/knowledge-garden/tree/main/',
           onInlineTags: 'warn',
           onInlineAuthors: 'ignore',
           onUntruncatedBlogPosts: 'warn',
@@ -77,7 +85,7 @@ const config: Config = {
         },
         {to: '/blog', label: '📝 博客', position: 'left'},
         {
-          href: 'https://github.com/your-username/knowledge-garden',
+          href: 'https://github.com/zhangbeibei00/knowledge-garden',
           label: 'GitHub',
           position: 'right',
         },
@@ -89,9 +97,9 @@ const config: Config = {
         {
           title: '主要板块',
           items: [
-            {label: '模型量化', to: '/docs/category/模型量化'},
-            {label: 'RL 后训练', to: '/docs/category/rl-后训练'},
-            {label: '推理引擎', to: '/docs/category/推理引擎'},
+            {label: '模型量化', to: '/docs/quantization'},
+            {label: 'RL 后训练', to: '/docs/rl-post-training'},
+            {label: '推理引擎', to: '/docs/inference-engines'},
           ],
         },
         {
@@ -106,11 +114,11 @@ const config: Config = {
           title: '其他',
           items: [
             {label: '博客', to: '/blog'},
-            {label: 'GitHub', href: 'https://github.com/your-username/knowledge-garden'},
+            {label: 'GitHub', href: 'https://github.com/zhangbeibei00/knowledge-garden'},
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} 开发虾的知识花园 · Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Knowledge Garden · Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,

@@ -1,10 +1,10 @@
 ---
-slug: /
 sidebar_position: 1
+slug: /intro
 title: 首页
 ---
 
-# 🌱 开发虾的知识花园
+# 🌱 知识花园
 
 > 一个 AI Infra 工程师的第二大脑。聚焦 **模型量化**、**RL 后训练**、**推理引擎**。
 
@@ -20,13 +20,13 @@ title: 首页
 
 | 板块 | 核心内容 |
 |---|---|
-| [📐 模型量化](/docs/category/模型量化) | PTQ、QAT、FP8/NVFP4/INT4、实践笔记 |
-| [🎯 RL 后训练](/docs/category/rl-后训练) | PPO / DPO / GRPO、RLHF pipeline |
-| [⚙️ 训练框架](/docs/category/训练框架) | Megatron / verl / DeepSpeed |
-| [🚀 推理引擎](/docs/category/推理引擎) | vLLM、SGLang、推理优化 |
-| [🧠 基础知识](/docs/category/基础知识) | Transformer、GPU/CUDA、分布式 |
-| [📖 论文精读](/docs/category/论文精读) | 关键论文的读书笔记 |
-| [🌱 想法花园](/docs/category/想法花园) | 随手记的想法与疑问 |
+| [📐 模型量化](/docs/quantization) | PTQ、QAT、FP8/NVFP4/INT4、实践笔记 |
+| [🎯 RL 后训练](/docs/rl-post-training) | PPO / DPO / GRPO、RLHF pipeline |
+| [⚙️ 训练框架](/docs/training-frameworks) | Megatron / verl / DeepSpeed |
+| [🚀 推理引擎](/docs/inference-engines) | vLLM、SGLang、推理优化 |
+| [🧠 基础知识](/docs/fundamentals) | Transformer、GPU/CUDA、分布式 |
+| [📖 论文精读](/docs/paper-reading) | 关键论文的读书笔记 |
+| [🌱 想法花园](/docs/garden) | 随手记的想法与疑问 |
 
 ## 关于写作原则
 

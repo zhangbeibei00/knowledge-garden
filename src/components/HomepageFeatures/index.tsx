@@ -21,7 +21,7 @@ const FeatureList: FeatureItem[] = [
         从 PTQ 到 QAT，从 FP8 到 NVFP4。系统梳理主流量化方法与低精度硬件格式的原理和工程实践。
       </>
     ),
-    link: '/docs/category/模型量化',
+    link: '/docs/quantization',
     linkText: '进入量化专区 →',
   },
   {
@@ -32,7 +32,7 @@ const FeatureList: FeatureItem[] = [
         PPO、DPO、GRPO 等主流 RLHF 算法笔记。以 AI Infra 工程师的视角理解 RL 训练 pipeline 的每一步。
       </>
     ),
-    link: '/docs/category/rl-后训练',
+    link: '/docs/rl-post-training',
     linkText: '进入 RL 专区 →',
   },
   {
@@ -43,7 +43,7 @@ const FeatureList: FeatureItem[] = [
         vLLM、SGLang、TensorRT-LLM 的原理与源码笔记。理解 PagedAttention、Continuous Batching、PD 分离等核心技术。
       </>
     ),
-    link: '/docs/category/推理引擎',
+    link: '/docs/inference-engines',
     linkText: '进入推理专区 →',
   },
 ];
