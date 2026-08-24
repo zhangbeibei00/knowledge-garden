@@ -53,12 +53,12 @@ tags: [llada, diffusion-lm, masked-diffusion, training, inference, remasking]
 
 **前向加噪的转移概率**（每个位置独立）：
 
-```
-q(x_t^i | x_0^i) = {
-    t,      如果 x_t^i = [MASK]     ← 有 t 概率被 mask
-    1-t,    如果 x_t^i = x_0^i       ← 有 1-t 概率保留
-}
-```
+$$
+q(x_t^i \mid x_0^i) = \begin{cases}
+t,     & \text{如果 } x_t^i = \text{[MASK]}\quad(\text{有 } t \text{ 概率被 mask}) \\
+1 - t, & \text{如果 } x_t^i = x_0^i\quad(\text{有 } 1-t \text{ 概率保留})
+\end{cases}
+$$
 
 ### 关键性质
 
@@ -100,11 +100,11 @@ x_t:          [[M], [M], [M], [M], [M], [M]]  ← 全 mask
 
 去噪器是一个**双向 Transformer**（不加 causal mask），任务是：
 
-给定被 mask 的序列 x_t 和时间 t，**并行预测所有 [MASK] 位置的原始 token**：
+给定被 mask 的序列 $x_t$ 和时间 $t$，**并行预测所有 `[MASK]` 位置的原始 token**：
 
-```
-p_θ(x_0^i | x_t, t)     对所有 x_t^i = [MASK] 的位置
-```
+$$
+p_\theta(x_0^i \mid x_t, t)\quad\text{对所有 } x_t^i = \text{[MASK]} \text{ 的位置}
+$$
 
 ### 和自回归 Transformer 的架构差异
 
@@ -125,16 +125,14 @@ p_θ(x_0^i | x_t, t)     对所有 x_t^i = [MASK] 的位置
 
 ### 4.1 数学定义
 
-```
-L(θ) = E_{x_0, t, x_t} [  (1/t) · Σ_i 𝟙[x_t^i = MASK] · (-log p_θ(x_0^i | x_t))  ]
-                         └───┘   └──────────────────┘   └────────────────────────┘
-                       归一化    只算被 mask 的位置       预测原 token 的 log-prob
-```
+$$
+\mathcal{L}(\theta) = \mathbb{E}_{x_0,\, t,\, x_t}\!\left[\, \underbrace{\frac{1}{t}}_{\text{归一化}} \cdot \sum_i \underbrace{\mathbb{1}[x_t^i = \text{MASK}]}_{\text{只算被 mask 的位置}} \cdot \underbrace{\big(\!-\log p_\theta(x_0^i \mid x_t)\big)}_{\text{预测原 token 的 log-prob}} \,\right]
+$$
 
 **三个关键组件**：
-1. `𝟙[x_t^i = MASK]` — 只在 mask 位置计算 loss
-2. `-log p_θ(x_0^i | x_t)` — 标准交叉熵
-3. `1/t` — 加权归一化，让不同掩码强度的贡献均衡
+1. $\mathbb{1}[x_t^i = \text{MASK}]$ — 只在 mask 位置计算 loss
+2. $-\log p_\theta(x_0^i \mid x_t)$ — 标准交叉熵
+3. $1/t$ — 加权归一化，让不同掩码强度的贡献均衡
 
 ### 4.2 训练伪代码
 

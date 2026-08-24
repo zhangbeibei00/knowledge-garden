@@ -48,60 +48,56 @@ tags: [diffusion, ddpm, iddpm, ddim, d3pm, mdlm, generative-model, foundation]
 
 ### 2.1 前向过程
 
-给定原始数据 x₀，定义 T 步（比如 T=1000）的加噪链：
+给定原始数据 $x_0$，定义 $T$ 步（比如 $T=1000$）的加噪链，每一步：
 
-```
-x_0 → x_1 → x_2 → ... → x_T
-每一步:  x_t = sqrt(1 - β_t) · x_{t-1} + sqrt(β_t) · ε
-                                          └──────────┘
-                                    标准高斯噪声 N(0, I)
-```
+$$
+x_t = \sqrt{1 - \beta_t}\, x_{t-1} + \sqrt{\beta_t}\, \varepsilon,\quad \varepsilon \sim \mathcal{N}(0, I)
+$$
 
-其中 β_t 是一个预先设计好的"噪声调度"（noise schedule），随 t 增大而增大。
+其中 $\beta_t$ 是一个预先设计好的"噪声调度"（noise schedule），随 $t$ 增大而增大。
 
-**巧妙的一步**：可以合并 t 步得到闭式：
+**巧妙的一步**：可以合并 $t$ 步得到闭式：
 
-```
-x_t = sqrt(ᾱ_t) · x_0 + sqrt(1 - ᾱ_t) · ε
-其中 ᾱ_t = ∏(1 - β_i), i=1..t
-```
+$$
+x_t = \sqrt{\bar\alpha_t}\, x_0 + \sqrt{1 - \bar\alpha_t}\, \varepsilon,\quad \bar\alpha_t = \prod_{i=1}^{t}(1 - \beta_i)
+$$
 
-**这就是说**：任意一步 t 的加噪状态可以**一步到位从 x_0 采样得到**，不需要真的迭代 t 次。训练时省时省力。
+**这就是说**：任意一步 $t$ 的加噪状态可以**一步到位从 $x_0$ 采样得到**，不需要真的迭代 $t$ 次。训练时省时省力。
 
 ### 2.2 反向过程（学习目标）
 
-模型 ε_θ(x_t, t) 输入含噪图和时间步，**预测这一步的噪声 ε**：
+模型 $\varepsilon_\theta(x_t, t)$ 输入含噪图和时间步，**预测这一步的噪声 $\varepsilon$**：
 
-```
-L_DDPM = E_{x_0, t, ε} [ || ε - ε_θ(x_t, t) ||² ]
-```
+$$
+\mathcal{L}_{\text{DDPM}} = \mathbb{E}_{x_0,\, t,\, \varepsilon}\left[\, \lVert \varepsilon - \varepsilon_\theta(x_t, t) \rVert^2 \,\right]
+$$
 
 **训练目标就一行**：预测噪声的 MSE。极简。
 
-**为什么预测噪声而不是 x_0**？数学上等价，但预测噪声在 loss 数值稳定性上更好（推导见 DDPM 附录）。
+**为什么预测噪声而不是 $x_0$**？数学上等价，但预测噪声在 loss 数值稳定性上更好（推导见 DDPM 附录）。
 
 ### 2.3 推理（采样）
 
-从纯噪声 x_T ~ N(0, I) 起步，迭代 T 步：
+从纯噪声 $x_T \sim \mathcal{N}(0, I)$ 起步，迭代 $T$ 步：
 
-```
-for t = T, T-1, ..., 1:
-    ε_pred = model(x_t, t)
-    x_{t-1} = f(x_t, ε_pred, t) + noise    ← 每步都要注入一点新噪声
+```python
+for t in [T, T-1, ..., 1]:
+    eps_pred = model(x_t, t)
+    x_{t-1} = f(x_t, eps_pred, t) + noise    # 每步都要注入一点新噪声
 return x_0
 ```
 
-**问题**：T=1000 步太慢，生成一张图要跑 1000 次模型前向。这就是后来 DDIM、Consistency Models 想解决的。
+**问题**：$T=1000$ 步太慢，生成一张图要跑 1000 次模型前向。这就是后来 DDIM、Consistency Models 想解决的。
 
 ### 2.4 关键概念表
 
 | 概念 | 含义 |
 |------|------|
-| **β_t (noise schedule)** | 第 t 步加多少噪声，通常线性从 1e-4 到 0.02 |
-| **ᾱ_t** | 从 0 到 t 的累积保留系数 |
-| **ε (epsilon)** | 加入的高斯噪声，模型要预测的目标 |
-| **T (总步数)** | DDPM 原论文用 1000 |
-| **Timestep Embedding** | 把 t 编码为向量,通过 sinusoidal 位置编码,输入 U-Net |
+| $\beta_t$ (noise schedule) | 第 $t$ 步加多少噪声，通常线性从 $10^{-4}$ 到 $0.02$ |
+| $\bar\alpha_t$ | 从 $0$ 到 $t$ 的累积保留系数 |
+| $\varepsilon$ (epsilon) | 加入的高斯噪声，模型要预测的目标 |
+| $T$ (总步数) | DDPM 原论文用 $1000$ |
+| Timestep Embedding | 把 $t$ 编码为向量，通过 sinusoidal 位置编码，输入 U-Net |
 
 ---
 
@@ -113,14 +109,16 @@ DDPM 效果好但有几个明显缺点，iDDPM 针对性地做了三个改进：
 
 ### 3.1 改进一：Cosine Noise Schedule
 
-DDPM 的**线性 β 调度**在小分辨率图（32×32、64×64）上有问题 —— 加噪太快，前几步就把信息毁掉了。
+DDPM 的**线性 $\beta$ 调度**在小分辨率图（32×32、64×64）上有问题 —— 加噪太快，前几步就把信息毁掉了。
 
 iDDPM 用 **cosine 调度**：
 
-```
-DDPM 线性:    β_t 从 1e-4 线性到 0.02
-iDDPM cosine: ᾱ_t = cos²((t/T + s) / (1+s) · π/2),  s ≈ 0.008
-```
+- DDPM 线性：$\beta_t$ 从 $10^{-4}$ 线性到 $0.02$
+- iDDPM cosine：
+
+$$
+\bar\alpha_t = \cos^2\!\left(\frac{t/T + s}{1 + s} \cdot \frac{\pi}{2}\right),\quad s \approx 0.008
+$$
 
 **效果**：
 - 前期加噪更慢，中期加噪更均匀
@@ -129,21 +127,19 @@ iDDPM cosine: ᾱ_t = cos²((t/T + s) / (1+s) · π/2),  s ≈ 0.008
 
 ### 3.2 改进二：学习方差 Σ_θ
 
-DDPM 里反向过程的方差是**固定**的（β_t 或 β̃_t）。iDDPM 让模型**学习**一个介于两者之间的插值系数：
+DDPM 里反向过程的方差是**固定**的（$\beta_t$ 或 $\tilde\beta_t$）。iDDPM 让模型**学习**一个介于两者之间的插值系数：
 
-```
-Σ_θ(x_t, t) = exp( v_θ(x_t, t) · log β_t + (1 - v_θ(x_t, t)) · log β̃_t )
-                   └─────────┘
-              模型输出一个 [0, 1] 之间的插值系数
-```
+$$
+\Sigma_\theta(x_t, t) = \exp\!\Big(\, v_\theta(x_t, t) \cdot \log \beta_t + \big(1 - v_\theta(x_t, t)\big) \cdot \log \tilde\beta_t \,\Big)
+$$
+
+其中 $v_\theta(x_t, t) \in [0, 1]$ 是模型输出的插值系数。
 
 **这带来一个副作用**：模型现在**同时输出**均值和方差，训练目标变成：
 
-```
-L_iDDPM = L_simple(ε) + λ · L_VLB(μ, Σ)
-          └─────────┘   └────────────┘
-        DDPM 原始 MSE    变分下界(约束方差学习)
-```
+$$
+\mathcal{L}_{\text{iDDPM}} = \underbrace{\mathcal{L}_{\text{simple}}(\varepsilon)}_{\text{DDPM 原始 MSE}} + \lambda \cdot \underbrace{\mathcal{L}_{\text{VLB}}(\mu, \Sigma)}_{\text{变分下界}\text{(约束方差学习)}}
+$$
 
 **好处**：可以在**更少的采样步数**下（比如 50 步而不是 1000 步）保持高质量。
 
@@ -170,9 +166,9 @@ L_iDDPM = L_simple(ε) + λ · L_VLB(μ, Σ)
 
 ### 4.1 核心洞察
 
-DDPM 的采样是**马尔可夫过程**（`x_t` 只依赖 `x_{t+1}`），每步都要加新噪声，所以必须走完 T 步。
+DDPM 的采样是**马尔可夫过程**（$x_t$ 只依赖 $x_{t+1}$），每步都要加新噪声，所以必须走完 $T$ 步。
 
-DDIM 说：如果我不严格遵守马尔可夫链，而是**直接从 `x_t` 跳到 `x_{t-k}`**（跳 k 步），可以吗？
+DDIM 说：如果我不严格遵守马尔可夫链，而是**直接从 $x_t$ 跳到 $x_{t-k}$**（跳 $k$ 步），可以吗？
 
 **结论**：**可以**。而且效果几乎不损失。
 
@@ -180,13 +176,11 @@ DDIM 说：如果我不严格遵守马尔可夫链，而是**直接从 `x_t` 跳
 
 DDIM 的采样公式：
 
-```
-x_{t-1} = sqrt(ᾱ_{t-1}) · x̂_0(x_t) + sqrt(1 - ᾱ_{t-1} - σ_t²) · ε_θ(x_t, t) + σ_t · z
-          └──────────┘  └─────────┘    └─────────────────────────────┘   └────┘
-         预测的 x_0     沿"噪声方向"移动               新采噪声(可为0)
+$$
+x_{t-1} = \sqrt{\bar\alpha_{t-1}} \cdot \underbrace{\hat{x}_0(x_t)}_{\text{预测的 } x_0} + \underbrace{\sqrt{1 - \bar\alpha_{t-1} - \sigma_t^2} \cdot \varepsilon_\theta(x_t, t)}_{\text{沿"噪声方向"移动}} + \underbrace{\sigma_t \cdot z}_{\text{新采噪声（可为0）}}
+$$
 
-其中 σ_t = 0 时,采样是完全确定性的(相同 x_T 总生成相同 x_0)
-```
+**关键**：当 $\sigma_t = 0$ 时，采样是完全确定性的（相同 $x_T$ 总生成相同 $x_0$）。
 
 ### 4.3 加速效果
 
@@ -216,25 +210,27 @@ Yang Song 证明了：**DDPM、NCSN、Score-based 是同一个东西的不同离
 
 用**连续时间 SDE**（随机微分方程）描述前向加噪：
 
-```
-dx = f(x, t) dt + g(t) dW      ← W 是 Wiener 过程(布朗运动)
-```
+$$
+dx = f(x, t)\, dt + g(t)\, dW
+$$
+
+其中 $W$ 是 Wiener 过程（布朗运动）。
 
 反向过程也是一个 SDE：
 
-```
-dx = [f(x, t) - g(t)² · ∇_x log p_t(x)] dt + g(t) dW̄
-                       └──────────────┘
-                   score function(模型学的东西)
-```
+$$
+dx = \big[\, f(x, t) - g(t)^2 \cdot \underbrace{\nabla_x \log p_t(x)}_{\text{score function}} \,\big]\, dt + g(t)\, d\bar{W}
+$$
 
-**核心洞察**：模型学的其实是 **score function** —— 数据分布对数密度的梯度 ∇_x log p_t(x)。
+**核心洞察**：模型学的其实是 **score function** —— 数据分布对数密度的梯度 $\nabla_x \log p_t(x)$。
 
-预测噪声 ε ≡ 学 score，两者数学等价（在高斯噪声假设下）：
+预测噪声 $\varepsilon$ 等价于学 score，两者数学等价（在高斯噪声假设下）：
 
-```
-ε_θ(x_t, t) ∝ -∇_x log p_t(x_t)     ← 差一个 -sqrt(1-ᾱ_t) 的系数
-```
+$$
+\varepsilon_\theta(x_t, t) \propto -\nabla_x \log p_t(x_t)
+$$
+
+差一个 $-\sqrt{1 - \bar\alpha_t}$ 的系数。
 
 ### 5.2 意义
 
@@ -252,21 +248,19 @@ dx = [f(x, t) - g(t)² · ∇_x log p_t(x)] dt + g(t) dW̄
 
 **论文**: Structured Denoising Diffusion Models in Discrete State-Spaces, Austin et al., NeurIPS 2021, [arXiv 2107.03006](https://arxiv.org/abs/2107.03006)
 
-D3PM 用**转移矩阵 Q_t** 定义离散加噪：
+D3PM 用**转移矩阵 $Q_t$** 定义离散加噪：
 
-```
-q(x_t | x_{t-1}) = Cat(x_t; Q_t · x_{t-1})
-                        └──────────────┘
-                    某种类别分布
-```
+$$
+q(x_t \mid x_{t-1}) = \text{Cat}(x_t;\; Q_t \cdot x_{t-1})
+$$
 
-Q_t 有几种设计：
+其中 $\text{Cat}$ 是类别分布。$Q_t$ 有几种设计：
 
 | 类型 | 转移矩阵 |
 |------|---------|
-| **Uniform** | 每个 token 有 β_t 概率变成随机 token |
+| **Uniform** | 每个 token 有 $\beta_t$ 概率变成随机 token |
 | **Gaussian on embedding** | 转移概率正比于 embedding 距离 |
-| **Absorbing (吸收态)** | 每个 token 有 β_t 概率变成特殊 [MASK] |
+| **Absorbing (吸收态)** | 每个 token 有 $\beta_t$ 概率变成特殊 `[MASK]` |
 
 **吸收态转移**是最重要的一种 —— 它把 D3PM 和 **BERT 的 MLM 训练**联系起来了：
 
@@ -286,15 +280,15 @@ Absorbing D3PM:
 
 MDLM 聚焦**吸收态 mask 扩散**，通过 Rao-Blackwellization 把复杂的扩散 loss 简化：
 
-```
-q(x_t | x_0) = Cat(α_t · x_0 + (1 - α_t) · m)
-                    └─────┘         └────┘
-                原 token 分布   [MASK] 分布
+$$
+q(x_t \mid x_0) = \text{Cat}\!\big(\, \alpha_t \cdot x_0 + (1 - \alpha_t) \cdot m \,\big)
+$$
 
-L_MDLM = E_{t, x_t} [ (α_t' / (1 - α_t)) · Σ_i 𝟙[x_t^i = MASK] · (-log p_θ(x_0^i | x_t)) ]
-                    └──────────────────┘   └─────────────────────────────────────────┘
-                     加权系数(从 t 导出)         只在 mask 位置算交叉熵
-```
+其中 $\alpha_t \cdot x_0$ 是原 token 分布，$(1 - \alpha_t) \cdot m$ 是 `[MASK]` 分布。训练损失：
+
+$$
+\mathcal{L}_{\text{MDLM}} = \mathbb{E}_{t,\, x_t}\!\left[\, \underbrace{\frac{\alpha_t'}{1 - \alpha_t}}_{\text{加权系数（从 }t\text{ 导出）}} \cdot \sum_i \underbrace{\mathbb{1}[x_t^i = \text{MASK}]}_{\text{只在 mask 位置}} \cdot \big(\!-\log p_\theta(x_0^i \mid x_t)\big) \,\right]
+$$
 
 **关键结论**：
 - 扩散语言模型的训练 = **有原则的加权 masked cross-entropy**
