@@ -1,0 +1,8 @@
+{
+  "label": "Diffusion LM",
+  "position": 2,
+  "link": {
+    "type": "doc",
+    "id": "fundamentals/diffusion-lm/index"
+  }
+}

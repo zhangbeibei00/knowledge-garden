@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>LLaDA 训练 + 推理流程图</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: #f7f8fa;
+    margin: 0;
+    padding: 24px;
+    color: #1c1e21;
+  }
+  h1 {
+    text-align: center;
+    color: #1a237e;
+    margin-bottom: 4px;
+  }
+  .subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 32px;
+    font-size: 14px;
+  }
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .panel {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .panel h2 {
+    margin-top: 0;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e0e0e0;
+    font-size: 20px;
+  }
+  .train-h { color: #2e7d32; }
+  .infer-h { color: #c62828; }
+  svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .legend {
+    max-width: 1400px;
+    margin: 32px auto 0;
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .legend h3 {
+    margin-top: 0;
+  }
+  .legend table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .legend td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+  }
+  .legend td:first-child {
+    width: 220px;
+    font-weight: 600;
+    color: #1a237e;
+  }
+  .footer {
+    text-align: center;
+    color: #999;
+    font-size: 12px;
+    margin-top: 24px;
+  }
+</style>
+</head>
+<body>
+
+<h1>🌊 LLaDA 训练 + 推理流程图</h1>
+<div class="subtitle">Masked Discrete Diffusion for Language Modeling</div>
+
+<div class="container">
+
+  <!-- 训练侧 -->
+  <div class="panel">
+    <h2 class="train-h">🎓 训练流程 (Training)</h2>
+    <svg viewBox="0 0 500 720" xmlns="http://www.w3.org/2000/svg">
+      <!-- 定义箭头 -->
+      <defs>
+        <marker id="arrowGreen" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L9,3 z" fill="#2e7d32"/>
+        </marker>
+      </defs>
+
+      <!-- Step 1: 原始序列 -->
+      <rect x="60" y="20" width="380" height="70" rx="8" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+      <text x="250" y="45" text-anchor="middle" font-size="13" font-weight="bold" fill="#1b5e20">Step 1 · 采样原始序列</text>
+      <text x="250" y="68" text-anchor="middle" font-size="14" font-family="monospace" fill="#333">x₀ = [今, 天, 天, 气, 很, 好]</text>
+      <line x1="250" y1="90" x2="250" y2="120" stroke="#2e7d32" stroke-width="2" marker-end="url(#arrowGreen)"/>
+
+      <!-- Step 2: 采样 t -->
+      <rect x="60" y="128" width="380" height="70" rx="8" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+      <text x="250" y="153" text-anchor="middle" font-size="13" font-weight="bold" fill="#1b5e20">Step 2 · 采样掩码强度</text>
+      <text x="250" y="176" text-anchor="middle" font-size="14" font-family="monospace" fill="#333">t ~ Uniform(0, 1)   例如 t = 0.5</text>
+      <line x1="250" y1="198" x2="250" y2="228" stroke="#2e7d32" stroke-width="2" marker-end="url(#arrowGreen)"/>
+
+      <!-- Step 3: mask -->
+      <rect x="60" y="236" width="380" height="90" rx="8" fill="#fff3e0" stroke="#ef6c00" stroke-width="2"/>
+      <text x="250" y="261" text-anchor="middle" font-size="13" font-weight="bold" fill="#e65100">Step 3 · 独立 mask 每个位置</text>
+      <text x="250" y="284" text-anchor="middle" font-size="12" fill="#666">每位置以 t=0.5 概率被替换为 [MASK]</text>
+      <text x="250" y="308" text-anchor="middle" font-size="14" font-family="monospace" fill="#333">x_t = [今, [M], 天, [M], 很, [M]]</text>
+      <line x1="250" y1="326" x2="250" y2="356" stroke="#2e7d32" stroke-width="2" marker-end="url(#arrowGreen)"/>
+
+      <!-- Step 4: Transformer -->
+      <rect x="60" y="364" width="380" height="100" rx="8" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+      <text x="250" y="389" text-anchor="middle" font-size="13" font-weight="bold" fill="#0d47a1">Step 4 · 双向 Transformer 前向</text>
+      <text x="250" y="412" text-anchor="middle" font-size="12" fill="#333">无 causal mask · RoPE · SwiGLU · RMSNorm</text>
+      <text x="250" y="432" text-anchor="middle" font-size="12" fill="#333">全序列 self-attention</text>
+      <text x="250" y="452" text-anchor="middle" font-size="12" font-family="monospace" fill="#666">logits = model(x_t)  形状 [L, V]</text>
+      <line x1="250" y1="464" x2="250" y2="494" stroke="#2e7d32" stroke-width="2" marker-end="url(#arrowGreen)"/>
+
+      <!-- Step 5: Loss -->
+      <rect x="60" y="502" width="380" height="120" rx="8" fill="#fce4ec" stroke="#c2185b" stroke-width="2"/>
+      <text x="250" y="527" text-anchor="middle" font-size="13" font-weight="bold" fill="#880e4f">Step 5 · Masked CE Loss</text>
+      <text x="250" y="552" text-anchor="middle" font-size="11" font-family="monospace" fill="#333">只在 mask 位置算交叉熵</text>
+      <text x="250" y="574" text-anchor="middle" font-size="12" font-family="monospace" fill="#c62828">L = (1/t) · Σ CE(logits_i, x_0^i)</text>
+      <text x="250" y="594" text-anchor="middle" font-size="11" fill="#666">i ∈ mask 位置</text>
+      <text x="250" y="612" text-anchor="middle" font-size="11" fill="#666">(1/t) 加权 → 变分下界的 principled 上界</text>
+      <line x1="250" y1="622" x2="250" y2="652" stroke="#2e7d32" stroke-width="2" marker-end="url(#arrowGreen)"/>
+
+      <!-- Step 6: backward -->
+      <rect x="60" y="660" width="380" height="50" rx="8" fill="#f3e5f5" stroke="#6a1b9a" stroke-width="2"/>
+      <text x="250" y="684" text-anchor="middle" font-size="13" font-weight="bold" fill="#4a148c">Step 6 · Backward + Optimizer Step</text>
+      <text x="250" y="702" text-anchor="middle" font-size="11" fill="#666">AdamW · warmup · gradient clipping</text>
+    </svg>
+  </div>
+
+  <!-- 推理侧 -->
+  <div class="panel">
+    <h2 class="infer-h">🚀 推理流程 (Inference · N 步迭代)</h2>
+    <svg viewBox="0 0 500 720" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrowRed" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L9,3 z" fill="#c62828"/>
+        </marker>
+        <marker id="arrowLoop" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L9,3 z" fill="#ef6c00"/>
+        </marker>
+      </defs>
+
+      <!-- Step 0: prompt + 全 mask -->
+      <rect x="30" y="20" width="440" height="90" rx="8" fill="#fff3e0" stroke="#c62828" stroke-width="2"/>
+      <text x="250" y="45" text-anchor="middle" font-size="13" font-weight="bold" fill="#b71c1c">Step 0 · 初始化</text>
+      <text x="250" y="68" text-anchor="middle" font-size="11" fill="#333">Prompt + Response 区(全 [MASK])</text>
+      <text x="250" y="90" text-anchor="middle" font-size="12" font-family="monospace" fill="#333">[介绍扩散模型] + [M M M M M M M M M M]</text>
+      <line x1="250" y1="110" x2="250" y2="140" stroke="#c62828" stroke-width="2" marker-end="url(#arrowRed)"/>
+
+      <!-- 循环开始标记 -->
+      <text x="45" y="152" font-size="11" font-weight="bold" fill="#ef6c00">FOR step = 1, 2, ..., N:</text>
+
+      <!-- Step 1: Forward -->
+      <rect x="30" y="160" width="440" height="70" rx="8" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+      <text x="250" y="185" text-anchor="middle" font-size="13" font-weight="bold" fill="#0d47a1">① 双向 Transformer 前向</text>
+      <text x="250" y="208" text-anchor="middle" font-size="11" fill="#333">对当前 x_t 全序列 self-attention</text>
+      <text x="250" y="222" text-anchor="middle" font-size="11" font-family="monospace" fill="#666">logits = model(x_t)</text>
+      <line x1="250" y1="230" x2="250" y2="255" stroke="#c62828" stroke-width="2" marker-end="url(#arrowRed)"/>
+
+      <!-- Step 2: 预测 + 置信度 -->
+      <rect x="30" y="263" width="440" height="90" rx="8" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+      <text x="250" y="288" text-anchor="middle" font-size="13" font-weight="bold" fill="#1b5e20">② 预测所有 M 位置 + 置信度</text>
+      <text x="250" y="310" text-anchor="middle" font-size="11" font-family="monospace" fill="#333">tokens = argmax(logits)</text>
+      <text x="250" y="328" text-anchor="middle" font-size="11" font-family="monospace" fill="#333">confidence = max(softmax(logits))</text>
+      <text x="250" y="346" text-anchor="middle" font-size="10" fill="#666">例: [扩(.9), 散(.85), M, 型(.6), 是(.95), ...]</text>
+      <line x1="250" y1="353" x2="250" y2="378" stroke="#c62828" stroke-width="2" marker-end="url(#arrowRed)"/>
+
+      <!-- Step 3: Remask -->
+      <rect x="30" y="386" width="440" height="110" rx="8" fill="#fce4ec" stroke="#c2185b" stroke-width="2"/>
+      <text x="250" y="411" text-anchor="middle" font-size="13" font-weight="bold" fill="#880e4f">③ Remask 策略</text>
+      <text x="250" y="432" text-anchor="middle" font-size="11" fill="#333">保留 top-k 置信度位置,其他 remask</text>
+      <text x="90" y="454" font-size="10" fill="#666">• Low-Conf (默认)</text>
+      <text x="200" y="454" font-size="10" fill="#666">• Random</text>
+      <text x="290" y="454" font-size="10" fill="#666">• Semi-AR (SFT)</text>
+      <text x="250" y="478" text-anchor="middle" font-size="10" font-family="monospace" fill="#666">k = L / N   (均匀分配)</text>
+      <line x1="250" y1="496" x2="250" y2="520" stroke="#c62828" stroke-width="2" marker-end="url(#arrowRed)"/>
+
+      <!-- Step 4: Check -->
+      <polygon points="250,528 350,570 250,612 150,570" fill="#fff9c4" stroke="#f57f17" stroke-width="2"/>
+      <text x="250" y="565" text-anchor="middle" font-size="12" font-weight="bold" fill="#f57f17">还有 M ?</text>
+      <text x="250" y="585" text-anchor="middle" font-size="11" fill="#666">step &lt; N ?</text>
+
+      <!-- 循环回箭头 -->
+      <path d="M 350 570 Q 470 570 470 300 Q 470 175 470 175 L 350 175" fill="none" stroke="#ef6c00" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#arrowLoop)"/>
+      <text x="480" y="380" font-size="10" font-weight="bold" fill="#ef6c00" transform="rotate(90 480 380)">是 → 下一步</text>
+
+      <!-- 结束 -->
+      <line x1="250" y1="612" x2="250" y2="640" stroke="#c62828" stroke-width="2" marker-end="url(#arrowRed)"/>
+
+      <rect x="30" y="648" width="440" height="60" rx="8" fill="#e0f2f1" stroke="#00695c" stroke-width="2"/>
+      <text x="250" y="672" text-anchor="middle" font-size="13" font-weight="bold" fill="#004d40">完成 · 输出完整 Response</text>
+      <text x="250" y="694" text-anchor="middle" font-size="11" font-family="monospace" fill="#333">[扩, 散, 模, 型, 是, 一, 种, 生, 成, 模型]</text>
+    </svg>
+  </div>
+</div>
+
+<!-- 图例 -->
+<div class="legend">
+  <h3>📋 关键概念对照</h3>
+  <table>
+    <tr><td>x₀</td><td>原始 token 序列（训练时的 ground truth）</td></tr>
+    <tr><td>x_t</td><td>加噪后的序列（部分 token 被替换为 [MASK]）</td></tr>
+    <tr><td>t</td><td>掩码强度 ∈ (0, 1)，训练时从 Uniform(0,1) 采样</td></tr>
+    <tr><td>[MASK]</td><td>特殊 token，占位符，作为被"加噪"的替代</td></tr>
+    <tr><td>双向 Transformer</td><td>去掉 causal mask 的标准 Transformer（其他组件与 LLaMA 一致）</td></tr>
+    <tr><td>(1/t) 加权</td><td>变分下界推导出的归一化系数，让不同 t 的 loss 贡献均衡</td></tr>
+    <tr><td>N 步迭代</td><td>推理时的采样步数，可调（N=1 极快但差，N=L 慢但好，甜点 L/8）</td></tr>
+    <tr><td>Low-Conf Remask</td><td>Base 版默认策略：保留高置信度位置，低置信度重新 mask</td></tr>
+    <tr><td>Semi-AR Remask</td><td>SFT 常用：切成 block，块内并行，块间左到右，支持流式输出</td></tr>
+  </table>
+</div>
+
+<div class="footer">
+  <p>Knowledge Garden · Diffusion LM · <a href="./llada-method.md">配套文字讲解</a></p>
+</div>
+
+</body>
+</html>
